@@ -38,6 +38,8 @@ COPY multithread/race_compte_en_banque /root/multithread/race_compte_en_banque
 RUN echo "25" > /root/multithread/race_compte_en_banque/compte.txt
 
 
+# Compiler le code source multithread
+RUN gcc -o/root/multithread/race_compte_en_banque/race /root/multithread/race_compte_en_banque/race.c
 # Compiler le code source avec les protections désactivées
 RUN gcc -m32 -o /root/buffer_overflow/ret2win_prog -z execstack -fno-stack-protector -no-pie -D_FORTIFY_SOURCE=0 /root/buffer_overflow/ret2win_source.c
 RUN gcc -pthread -o /root/multithread/multithread_prog /root/multithread/multithread_program.c
@@ -49,4 +51,3 @@ exec /bin/bash' > /root/start.sh && chmod +x /root/start.sh
 
 # Définir le point d'entrée sur le script
 ENTRYPOINT ["/root/start.sh"]
-
