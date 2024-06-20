@@ -17,7 +17,7 @@ int main(){
     fscanf(file, "%d", &solde);
 
     solde-=debit;
-    usleep(10000);
+    usleep(100);
     
     rewind(file);                                                                  // place le curseur au début du fichier
     fprintf(file, "%-10d",solde);                                              //-10d pour écraser le dernier chiffre lorsque le nombre final a moins de chffre que l'initial ex : 1000->900
