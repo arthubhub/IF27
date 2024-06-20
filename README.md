@@ -20,7 +20,7 @@ Trouver l'offset :
 - gdb ./programme
 - disass fonction_vulnerable
 - b *[adresse après gets()]
-- run < A1A2A3A4 ...
+- run < file #avec dans file : A1A2A3A4 ... (voir la commande cyclic)
 - au breakpoint : info frame -> regarder saved eip et en déduire l'offset
 Trouver l'adresse de win
 - disass win -> prendre l'adresse de la première instruction
