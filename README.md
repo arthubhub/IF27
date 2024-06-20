@@ -48,20 +48,20 @@ mov dword ptr [ebx], eax ; ret
 # Format string 
 
 ## Lire partout
-
+```
 #!/bin/sh
 for i in for i in $(seq 1 2000)
 do
    echo "%${i}\$s" | ./vuln_format_string | grep "Result of" | strings >> results
 done
-
+```
 ## Écrire où on veut
 
 Pour finir, la chaine de formatage %n nous permet d’écrire. Elle écrit le nombre de caractères affichés jusque là, mais où?. Elle les écrit dans l’adresse qu’on lui donne, en argument. 
 Par exemple : 
 
-- printf(”54321%n”,&i); //écrit 5 dans i
-- printf(”ab54321%3$n”,&a,&b,&c); //écrit 7 dans c
+- `printf(”54321%n”,&i); //écrit 5 dans i`
+- `printf(”ab54321%3$n”,&a,&b,&c); //écrit 7 dans c`
 
 Donc ce qu’on peut faire, c’est envoyer une chaine de formatage comme “a1b2%x%x%x…”, compter le nombre de %x jusqu’à atteindre “a1b2”, puis remplacer ce %x par un %n. On écrit alors une valeur à l’adresse “a1b2”. On peut changer la valeur écrite en ajustant le nombre de caractères imprimés en modifiant un %x → %0Nx, par exemple %0134x. Il ne reste plus qu’à remplacer “a1b2” par l’adresse voulue ( \x78\x56\x34\x12 pour l’adresse 12345678 ).
 
