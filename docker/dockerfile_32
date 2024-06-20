@@ -1,0 +1,52 @@
+# Utiliser une image de base Ubuntu récente (64 bits par défaut)
+FROM ubuntu:22.04
+
+# Ajouter le support pour les bibliothèques 32 bits et installer les outils nécessaires
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y \
+    build-essential \
+    gcc-multilib \
+    g++-multilib \
+    gdb \
+    wget \
+    vim \
+    libc6:i386 \
+    libncurses5:i386 \
+    libstdc++6:i386 \
+    python3 \
+    python3-pip \
+    git \
+    unzip \
+    make \
+    checksec
+
+# Installer ROPgadget
+RUN pip3 install ROPgadget
+
+# Créer les répertoires de travail
+RUN mkdir /root/buffer_overflow
+RUN mkdir /root/format_string
+RUN mkdir /root/multithread
+
+# Copier les code source et les binaires précompilés
+COPY buffer_overflow/ret2win_source.c /root/buffer_overflow/ret2win_source.c
+COPY buffer_overflow/ropchain_32 /root/buffer_overflow/ropchain_32
+COPY format_string/* /root/format_string/
+COPY multithread/multithread_program.c /root/multithread/multithread_program.c
+COPY multithread/race_compte_en_banque /root/multithread/race_compte_en_banque
+RUN echo "25" > /root/multithread/race_compte_en_banque/compte.txt
+
+
+# Compiler le code source avec les protections désactivées
+RUN gcc -m32 -o /root/buffer_overflow/ret2win_prog -z execstack -fno-stack-protector -no-pie -D_FORTIFY_SOURCE=0 /root/buffer_overflow/ret2win_source.c
+RUN gcc -pthread -o /root/multithread/multithread_prog /root/multithread/multithread_program.c
+
+# Créer un script pour désactiver l'ASLR et démarrer bash
+RUN echo '#!/bin/bash\n\
+echo 0 > /proc/sys/kernel/randomize_va_space\n\
+exec /bin/bash' > /root/start.sh && chmod +x /root/start.sh
+
+# Définir le point d'entrée sur le script
+ENTRYPOINT ["/root/start.sh"]
+

